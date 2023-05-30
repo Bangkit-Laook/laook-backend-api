@@ -1,0 +1,25 @@
+# Python
+*.pyc
+__pycache__/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+
+# Editor/IDE
+.vscode/
+.idea/
+*.iml
+*.ipynb_checkpoints/
+
+# Environment
+.env
+
+# Dependencies
+/.venv/
+/lib/
+/pipenv/
+/pipenv.lock
