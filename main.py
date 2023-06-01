@@ -28,6 +28,7 @@ async def suggest_menus(ingredients: list):
     suggested_menus = [
         {
             "name": f"menu{i}",
+            "description": f"Ini deskripsi untuk menu {i}. Menu ini memiliki ciri khas tersendiri dibanding menu-menu lain. Menu yang satu ini juga jadi favorit karena prosesnya mudah untuk dilakukan",
             "image_url": "https://picsum.photos/400/300",
             "ingredients": [f"ing{i}_{j}" for j in range(randint(4, 20))],
             "steps": [
