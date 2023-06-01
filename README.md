@@ -9,6 +9,9 @@ This is the backend service of Laook. Laook Recipe Finder is an innovative app t
 - **Recipe Recommendations**: After finalizing the list of ingredients, Laook provides users with a curated list of food menus and recipes that can be prepared using the given ingredients.
 - **User-friendly Interface**: Laook offers an intuitive and user-friendly interface, making it easy for users to capture and modify ingredient images, view ingredient lists, and explore recipe suggestions.
 
+## Staging Test
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/10569299-cdf150eb-466e-4a83-b17e-7fb33c136524?action=collection%2Ffork&collection-url=entityId%3D10569299-cdf150eb-466e-4a83-b17e-7fb33c136524%26entityType%3Dcollection%26workspaceId%3D7778e172-9e48-49c8-a63a-9853bec604fa)
+
 ## Getting Started
 
 To run the Laook backend service locally, follow the steps below:
