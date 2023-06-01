@@ -59,7 +59,7 @@ async def suggest_menus(request: SuggestMenusRequest):
             "image_url": "https://picsum.photos/400/300",
             "ingredients": [f"ing{i}_{j}" for j in range(randint(4, 20))],
             "steps": [
-                {"step": f"This is step {j} in making menu{i}. You have to follow this religiously no matter what. Please follow the instructions clearly or else you will suffer."}
+                f"This is step {j} in making menu{i}. You have to follow this religiously no matter what. Please follow the instructions clearly or else you will suffer."
                 for j in range(randint(5, 15))
             ],
         } for i in range(randint(0, 10))
