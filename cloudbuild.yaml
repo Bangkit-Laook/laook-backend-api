@@ -10,4 +10,4 @@ steps:
   args: ['run','deploy','laook-api','--image','gcr.io/$PROJECT_ID/laook-api:${VERSION}','--region','asia-southeast2','--platform','managed', '--allow-unauthenticated']
 
 substitutions:
-  {VERSION}: '0.1'
+  VERSION: '0.1'
