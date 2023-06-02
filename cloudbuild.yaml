@@ -1,13 +1,13 @@
 steps:
 # Build the Container Image
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build','-t','gcr.io/${_PROJECT}/${_CONTAINERNAME}/${_VERSION}','.']
+  args: ['build','-t','gcr.io/${_PROJECT}/$_CONTAINERNAME/$_VERSION','.']
 # Push the Container Image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push','gcr.io/${_PROJECT}/${_CONTAINERNAME}/${_VERSION}']
+  args: ['push','gcr.io/${_PROJECT}/$_CONTAINERNAME/$_VERSION']
 # Deploy the Container Image to Cloud Run
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['run','deploy','laook-api','--image','gcr.io/${_PROJECT}/${_CONTAINERNAME}/${_VERSION}','--region','asia-southeast2','--platform','managed', '--allow-unauthenticated']
+  args: ['run','deploy','laook-api','--image','gcr.io/$_PROJECT/$_CONTAINERNAME/$_VERSION','--region','asia-southeast2','--platform','managed', '--allow-unauthenticated']
 
 substitutions:
 _PROJECT: laook-backend
