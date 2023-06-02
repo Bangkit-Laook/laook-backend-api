@@ -1,11 +1,20 @@
-from fastapi import FastAPI, UploadFile, File
 from random import randint
-from pydantic import BaseModel
 from typing import List
+
+from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 # import ml_model
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class RecognizeIngredientsRequest(BaseModel):
