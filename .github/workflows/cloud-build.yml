@@ -19,6 +19,7 @@ jobs:
         with:
           version: '354.0.0'
           service_account_key: ${{ secrets.GCLOUD_AUTH_KEY }}
+          python_location: /usr/bin/python3
 
       - name: Build and Deploy
         run: |
