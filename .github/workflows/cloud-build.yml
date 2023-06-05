@@ -26,7 +26,7 @@ jobs:
 
       - name: Set up Google Cloud SDK
         run: |
-          echo "${{ secrets.GCLOUD_AUTH_KEY }}" > key.json
+          echo ${{ secrets.GCLOUD_AUTH_KEY }} | sed 's/"/\\"/g' > key.json
           gcloud auth activate-service-account --key-file=key.json
           gcloud config set project ${{ secrets.GCLOUD_PROJECT_ID }}
 
