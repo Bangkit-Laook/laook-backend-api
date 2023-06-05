@@ -1,0 +1,28 @@
+name: Cloud Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - config/cicd
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.3.0
+        with:
+          version: '354.0.0'
+          service_account_key: ${{ secrets.GCLOUD_AUTH_KEY }}
+
+      - name: Build and Deploy
+        run: |
+          gcloud config set project ${{ secrets.GCLOUD_PROJECT_ID }}
+          gcloud builds submit --config=cloudbuild.yaml --substitutions=_VERSION=$VERSION .
+        env:
+          VERSION: ${{ github.sha }}
