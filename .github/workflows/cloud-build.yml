@@ -24,10 +24,14 @@ jobs:
           exec -l $SHELL
           gcloud components update --quiet
 
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GCLOUD_AUTH_KEY }}'
+
       - name: Set up Google Cloud SDK
         run: |
-          echo ${{ secrets.GCLOUD_AUTH_KEY }} | sed 's/"/\\"/g' > key.json
-          gcloud auth activate-service-account --key-file=key.json
           gcloud config set project ${{ secrets.GCLOUD_PROJECT_ID }}
 
       - name: Build and Deploy
