@@ -73,7 +73,8 @@ async def suggest_menus(request: SuggestMenusRequest):
                 f"This is step {j} in making menu{i}. You have to follow this religiously no matter what. Please follow the instructions clearly or else you will suffer."
                 for j in range(random.randint(5, 15))
             ],
-        } for i in range(random.randint(0, 10))
+        } for i in range(10)
+        # } for i in range(random.randint(0, 10))
     ]
 
     # Return the list of suggested menus
