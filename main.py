@@ -49,7 +49,7 @@ async def recognize_ingredients(image: UploadFile = File(...)):
 
     # Pass the image to the machine learning model for ingredient recognition
     # recognized_ingredients = ml_model.recognize_ingredients("temp_image.jpg")
-    recognized_ingredients = [f"ing{i}" for i in range(randint(2, 20))]
+    recognized_ingredients = [f"ing{i}" for i in range(randint(3, 20))]
 
     # Return the list of recognized ingredients
     return {"ingredients": recognized_ingredients}
