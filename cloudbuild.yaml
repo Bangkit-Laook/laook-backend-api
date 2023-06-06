@@ -9,5 +9,8 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run','deploy','laook-api','--image','gcr.io/$PROJECT_ID/laook-api:${_VERSION}','--region','asia-southeast2','--platform','managed', '--allow-unauthenticated']
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 substitutions:
   _VERSION: '0.1'
