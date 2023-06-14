@@ -38,8 +38,8 @@ class SuggestMenusResponse(BaseModel):
     menus: List[Menu]
 
 # Load the machine learning model
-model_path = 'path/to/your/model'  # Replace with the actual path to your TensorFlow model
-model = tf.keras.models.load_model(model_path)
+model_path = './modelling.ipnyb'  # Replace with the actual path to your TensorFlow model
+model = tf.keras.models.load_model('model.h5')
 
 @app.post("/recognize_ingredients", response_model=RecognizeIngredientsResponse)
 async def recognize_ingredients(image: UploadFile = File(...)):
