@@ -1,12 +1,13 @@
+import os
 import random
-
 from typing import List
 
+import uvicorn
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-# import ml_model
 
+import tensorflow as tf
 
 app = FastAPI()
 app.add_middleware(
@@ -17,18 +18,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 class RecognizeIngredientsRequest(BaseModel):
     image: UploadFile
-
 
 class RecognizeIngredientsResponse(BaseModel):
     ingredients: List[str]
 
-
 class SuggestMenusRequest(BaseModel):
     ingredients: List[str]
-
 
 class Menu(BaseModel):
     name: str
@@ -37,10 +34,12 @@ class Menu(BaseModel):
     ingredients: List[str]
     steps: List[str]
 
-
 class SuggestMenusResponse(BaseModel):
     menus: List[Menu]
 
+# Load the machine learning model
+model_path = 'path/to/your/model'  # Replace with the actual path to your TensorFlow model
+model = tf.keras.models.load_model(model_path)
 
 @app.post("/recognize_ingredients", response_model=RecognizeIngredientsResponse)
 async def recognize_ingredients(image: UploadFile = File(...)):
@@ -48,33 +47,35 @@ async def recognize_ingredients(image: UploadFile = File(...)):
     with open("temp_image.jpg", "wb") as temp_image:
         temp_image.write(await image.read())
 
-    # Pass the image to the machine learning model for ingredient recognition
-    # recognized_ingredients = ml_model.recognize_ingredients("temp_image.jpg")
-    recognized_ingredients = [f"ing{i}" for i in range(random.randint(3, 20))]
+    # Preprocess the image and perform ingredient recognition using the machine learning model
+    img_tensor = tf.keras.preprocessing.image.load_img("temp_image.jpg", target_size=(224, 224))
+    img_array = tf.keras.preprocessing.image.img_to_array(img_tensor)
+    preprocessed_img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
+    preprocessed_img_tensor = tf.expand_dims(preprocessed_img_array, axis=0)
+
+    # Perform prediction on the preprocessed image tensor
+    predicted_labels = model.predict(preprocessed_img_tensor)
+
+    # Convert the predicted labels to ingredient names
+    recognized_ingredients = [label.decode('utf-8') for label in predicted_labels]  # Modify this conversion based on your model's output format
 
     # Return the list of recognized ingredients
     return {"ingredients": recognized_ingredients}
 
-
 @app.post("/suggest_menus", response_model=SuggestMenusResponse)
 async def suggest_menus(request: SuggestMenusRequest):
     ingredients = request.ingredients
-    print(random.choice(ingredients))
 
-    # Pass the ingredients to the machine learning model for menu suggestions
-    # suggested_menus = ml_model.suggest_menus(ingredients)
+    # Call the machine learning model for menu suggestions
     suggested_menus = [
         {
-            "name": f"menu{i}",
-            "description": f"Ini deskripsi untuk menu {i}. Menu ini memiliki ciri khas tersendiri dibanding menu-menu lain. Menu yang satu ini juga jadi favorit karena prosesnya mudah untuk dilakukan",
-            "image_url": "https://picsum.photos/400/300",
-            "ingredients": [*set(random.choice(ingredients) for _ in range(random.randint(1, 10)))] + [f"other ingredient {j}" for j in range(random.randint(0, 10))],
-            "steps": [
-                f"This is step {j} in making menu{i}. You have to follow this religiously no matter what. Please follow the instructions clearly or else you will suffer."
-                for j in range(random.randint(5, 15))
-            ],
-        } for i in range(10)
-        # } for i in range(random.randint(0, 10))
+            "name": f"Menu {i}",
+            "description": f"This is menu {i}",
+            "image_url": f"https://example.com/menu_{i}.jpg",
+            "ingredients": random.choices(ingredients, k=random.randint(1, 10)),
+            "steps": [f"Step {j}" for j in range(1, random.randint(5, 15))]
+        }
+        for i in range(10)
     ]
 
     # Return the list of suggested menus
