@@ -97,6 +97,3 @@ def suggest_menus_based_on_ingredients(ingredients: List[str]) -> List[Menu]:
     ]
 
     return suggested_menus
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
