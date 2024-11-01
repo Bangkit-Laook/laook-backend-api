@@ -1,8 +1,8 @@
 import os
 import random
-from typing import List
+from typing import List, Union
 import numpy as np
-# import pandas as pd
+import pandas as pd
 
 import uvicorn
 from fastapi import FastAPI, UploadFile, File
@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
 
 app = FastAPI()
 app.add_middleware(
@@ -41,11 +42,21 @@ class SuggestMenusResponse(BaseModel):
     menus: List[Menu]
 
 # Load the machine learning model for ingredient recognition
-model = load_model('/home/ahmad/hidayatahmad/Univ/Bangkit-Project-Laook/laook-backend/path/model.h5')
+model = load_model('/path/model.h5')
+
+def standard_response(status: str, message: str, data: Union[dict, list, None] = None):
+    """
+    Helper function to standardize JSON responses.
+    """
+    return {
+        "status": status,
+        "message": message,
+        "data": data
+    }
 
 @app.get("/")
 async def root():
-    return {"message": "App is running"}
+    return standard_response("success", "App is running")
 
 @app.post("/recognize_ingredients", response_model=RecognizeIngredientsResponse)
 async def recognize_ingredients(image: UploadFile = File(...)):
@@ -54,23 +65,19 @@ async def recognize_ingredients(image: UploadFile = File(...)):
         temp_image.write(await image.read())
 
     # Preprocess the image and perform ingredient recognition using the machine learning model
-    image = image.load_img('temp_image.jpg', target_size=(320, 320, 3))
-    image_array = image.img_to_array(image)
-    # img_tensor = tf.keras.preprocessing.image.load_img("temp_image.jpg", target_size=(320, 320, 3))
-    # img_array = tf.keras.preprocessing.image.img_to_array(img_tensor)
-    # preprocessed_img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
-    preprocessed_img_tensor = tf.expand_dims(image_array, axis=0)
+    img = tf.keras.preprocessing.image.load_img('temp_image.jpg', target_size=(320, 320))
+    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
+    img_tensor = tf.expand_dims(img_array, axis=0)
 
     # Perform prediction on the preprocessed image tensor
-    predicted_labels = model.predict(preprocessed_img_tensor, batch_size = 10)
+    predictions = model.predict(img_tensor)
 
-    # Convert the predicted labels to ingredient names
-    recognized_ingredients = [label.decode('utf-8') for label in predicted_labels]  # Modify this conversion based on your model's output format
+    # Convert the predictions to ingredient names (modify based on model output format)
+    recognized_ingredients = [str(label) for label in np.argmax(predictions, axis=1)]  # Modify as per model's output
 
     # Return the list of recognized ingredients
-    return {"ingredients": recognized_ingredients}
-
-    
+    return standard_response("success", "Ingredients recognized successfully", {"ingredients": recognized_ingredients})
 
 @app.post("/suggest_menus", response_model=SuggestMenusResponse)
 async def suggest_menus(request: SuggestMenusRequest):
@@ -80,7 +87,7 @@ async def suggest_menus(request: SuggestMenusRequest):
     suggested_menus = suggest_menus_based_on_ingredients(ingredients)
 
     # Return the list of suggested menus
-    return {"menus": suggested_menus}
+    return standard_response("success", "Menus suggested successfully", {"menus": suggested_menus})
 
 def suggest_menus_based_on_ingredients(ingredients: List[str]) -> List[Menu]:
     # Implement your own logic to suggest menus based on the provided ingredients
@@ -90,10 +97,13 @@ def suggest_menus_based_on_ingredients(ingredients: List[str]) -> List[Menu]:
             name=f"Menu {i}",
             description=f"This is menu {i}",
             image_url=f"https://example.com/menu_{i}.jpg",
-            ingredients=random.choices(ingredients, k=random.randint(1, 10)),
+            ingredients=random.choices(ingredients, k=random.randint(1, len(ingredients))),
             steps=[f"Step {j}" for j in range(1, random.randint(5, 15))]
         )
         for i in range(10)
     ]
 
     return suggested_menus
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
